@@ -91,6 +91,7 @@
         </div>
         
         <h1 class="display-name">{profile.displayName}</h1>
+        <p class="username-handle">@{profile.username}</p>
         {#if profile.role}
           <div class="role-badge">
             {profile.role}{profile.company ? ` @ ${profile.company}` : ''}
@@ -224,29 +225,43 @@
   }
 
   .display-name {
-    font-size: clamp(2rem, 4vw, 2.5rem);
-    font-weight: 800;
+    font-size: clamp(2rem, 4vw, 2.6rem);
+    font-weight: 900;
     letter-spacing: -0.5px;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.25rem;
+    color: #ffffff;
+    text-shadow:
+      0 0 32px var(--accent, #6366f1),
+      0 0 12px rgba(0, 0, 0, 0.8),
+      0 2px 4px rgba(0, 0, 0, 0.9);
+  }
+
+  .username-handle {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--accent, #6366f1);
+    opacity: 0.82;
+    margin-bottom: 0.9rem;
+    letter-spacing: 0.02em;
   }
 
   .role-badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.45rem 1rem;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 0.45rem 1.1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.18);
     border-radius: 999px;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     font-weight: 700;
-    color: var(--text-secondary);
+    color: rgba(255, 255, 255, 0.88);
     margin-bottom: 1rem;
   }
 
   .bio {
-    color: var(--text-secondary);
-    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.97rem;
     line-height: 1.85;
     max-width: 640px;
     margin: 0 auto;
