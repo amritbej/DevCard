@@ -1,4 +1,10 @@
-const API_BASE_URL = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:3000';
+// In the browser the Vite dev proxy forwards /auth and /api to the backend,
+// so we use relative URLs (no CORS). On the server (SSR load functions) we
+// need the full URL because there is no proxy there.
+const API_BASE_URL =
+  typeof window !== 'undefined'
+    ? ''                                                          // browser → proxy
+    : (import.meta.env.PUBLIC_API_URL ?? 'http://localhost:3000'); // SSR → direct
 
 type RequestOptions = {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';

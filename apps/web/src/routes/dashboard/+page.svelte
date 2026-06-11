@@ -15,7 +15,8 @@
     saving?: boolean;
   };
 
-  const API_BASE_URL = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:3000';
+  // Empty string in browser → Vite proxy forwards /api to backend (no CORS).
+  const API_BASE_URL = typeof window !== 'undefined' ? '' : (import.meta.env.PUBLIC_API_URL ?? 'http://localhost:3000');
   const platformOptions = Object.values(PLATFORMS).filter((platform) => platform.id !== 'discord');
 
   let token = $state<string | null>(null);
