@@ -3,8 +3,8 @@
   import { onMount } from 'svelte';
 
   let { data } = $props();
-  const profile = data.profile;
-  const error = data.error;
+  let profile = $derived(data.profile);
+  let pageError = $derived(data.error);
 
   const platformColors: Record<string, string> = {
     github: '#181717', linkedin: '#0A66C2', twitter: '#000000',
@@ -37,9 +37,7 @@
       clearTimeout(copyMessageTimeout);
     }
 
-    clearTimeout(copyTimeout);
-
-    copyTimeout = setTimeout(() => {
+    copyMessageTimeout = setTimeout(() => {
       copyMessage = '';
     }, 3000);
   }
@@ -71,7 +69,7 @@
 <div class="bg-gradient" style="--accent: {profile?.accentColor || '#6366f1'}"></div>
 
 <main class="profile-container {mounted ? 'loaded' : ''}">
-  {#if error || !profile}
+  {#if pageError || !profile}
     <div class="error-glass glass">
       <div class="error-emoji">😕</div>
       <h1>Profile not found</h1>

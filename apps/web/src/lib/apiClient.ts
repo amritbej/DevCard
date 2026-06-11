@@ -29,7 +29,11 @@ export async function apiRequest<T>(
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    throw new Error((error as any)?.message ?? `Request failed: ${response.status}`);
+    throw new Error((error as any)?.error ?? (error as any)?.message ?? `Request failed: ${response.status}`);
+  }
+
+  if (response.status === 204) {
+    return undefined as T;
   }
 
   return response.json() as Promise<T>;
