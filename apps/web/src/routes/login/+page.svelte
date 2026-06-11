@@ -2,20 +2,26 @@
   import { goto } from '$app/navigation';
   import { login } from '$lib/auth';
 
-  let email = $state('');
+  let email    = $state('');
   let password = $state('');
-  let error = $state('');
-  let loading = $state(false);
+  let error    = $state('');
+  let loading  = $state(false);
+
+  const canSubmit = $derived(email.includes('@') && password.length > 0 && !loading);
 
   async function submit() {
-    error = '';
+    error   = '';
     loading = true;
 
     try {
       await login({ email, password });
       await goto('/dashboard');
     } catch (err) {
-      error = err instanceof Error ? err.message : 'Unable to log in.';
+      const msg = err instanceof Error ? err.message : '';
+      // Give a friendlier message for credential errors
+      error = msg.toLowerCase().includes('invalid') || msg.toLowerCase().includes('401')
+        ? 'Email or password is incorrect. Please try again.'
+        : msg || 'Unable to log in. Please try again.';
     } finally {
       loading = false;
     }
@@ -24,31 +30,47 @@
 
 <svelte:head>
   <title>Log in | DevCard</title>
+  <meta name="description" content="Log in to your DevCard account to manage your developer profile links." />
 </svelte:head>
 
 <main class="auth-page">
   <section class="auth-panel glass">
-    <a href="/" class="brand">DevCard</a>
-    <h1>Log in</h1>
-    <p class="lede">Open your dashboard and keep your profile links current.</p>
+    <a href="/" class="brand">⚡ DevCard</a>
+    <h1>Welcome back</h1>
+    <p class="lede">Log in to manage your links and QR code.</p>
 
-    <form onsubmit={(event) => { event.preventDefault(); void submit(); }}>
+    <form onsubmit={(e) => { e.preventDefault(); void submit(); }}>
+
       <label>
         <span>Email</span>
-        <input bind:value={email} type="email" autocomplete="email" required />
+        <input
+          id="login-email"
+          bind:value={email}
+          type="email"
+          autocomplete="email"
+          required
+          placeholder="ada@example.com"
+        />
       </label>
 
       <label>
         <span>Password</span>
-        <input bind:value={password} type="password" autocomplete="current-password" required />
+        <input
+          id="login-password"
+          bind:value={password}
+          type="password"
+          autocomplete="current-password"
+          required
+          placeholder="Your password"
+        />
       </label>
 
       {#if error}
-        <p class="form-error" role="alert">{error}</p>
+        <p class="form-error" role="alert">⚠ {error}</p>
       {/if}
 
-      <button class="btn-primary" type="submit" disabled={loading}>
-        {loading ? 'Logging in...' : 'Log in'}
+      <button class="btn-primary" type="submit" disabled={!canSubmit}>
+        {loading ? 'Logging in…' : 'Log in'}
       </button>
     </form>
 
@@ -67,7 +89,7 @@
   .auth-panel {
     width: min(100%, 440px);
     border-radius: var(--radius);
-    padding: 2rem;
+    padding: 2.25rem 2rem;
     background: rgba(255, 255, 255, 0.78);
   }
 
@@ -80,16 +102,15 @@
     font-family: 'Outfit', sans-serif;
     font-size: 1.1rem;
     font-weight: 800;
-    margin-bottom: 2rem;
+    margin-bottom: 1.75rem;
   }
 
   h1 {
-    font-size: 2.2rem;
-    margin-bottom: 0.75rem;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
   }
 
-  .lede,
-  .switch {
+  .lede {
     color: var(--text-secondary);
     line-height: 1.6;
   }
@@ -102,19 +123,21 @@
 
   label {
     display: grid;
-    gap: 0.45rem;
+    gap: 0.4rem;
     color: var(--text-secondary);
+    font-size: 0.9rem;
     font-weight: 700;
   }
 
   input {
     width: 100%;
-    border: 1px solid var(--border);
+    border: 1.5px solid var(--border);
     border-radius: 10px;
     background: var(--bg-card);
     color: var(--text-primary);
     font: inherit;
-    padding: 0.9rem 1rem;
+    padding: 0.85rem 1rem;
+    transition: border-color 0.2s;
   }
 
   input:focus {
@@ -123,20 +146,25 @@
   }
 
   button:disabled {
-    cursor: wait;
-    opacity: 0.75;
+    cursor: not-allowed;
+    opacity: 0.55;
   }
 
   .form-error {
     border-radius: 10px;
-    background: rgba(239, 68, 68, 0.12);
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
     color: #b91c1c;
     padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
   }
 
   .switch {
     margin-top: 1.5rem;
     text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
   }
 
   .switch a {
